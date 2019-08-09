@@ -1,0 +1,14 @@
+{% extends "mainpage.html" %}
+{% block content %}
+
+{% for types in results %}
+	{% for subtypes in types %}
+		{% if subtypes %}
+		<p>
+			{{subtypes}}
+		</p>
+		{% endif %}
+	{% endfor%}
+{% endfor%}
+
+{% endblock %}

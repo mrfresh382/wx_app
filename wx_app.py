@@ -18,7 +18,7 @@ APPLICATION_NAME = "Cheapo Weather App"
 
 def processString(inputString):
     # alternative to use Javascript for input validation
-    return re.sub(" +", '%20', inputString)
+    return re.sub(' +', '%20', inputString)
 
 def getWxRpt(metarString, tafString):
     urlMETAR = 'https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString={0}&hoursBeforeNow=1'.format(metarString)
@@ -38,7 +38,6 @@ def getWxRpt(metarString, tafString):
 def parseXML(root):
     data = {}
     numResults = 0
-    print root[6][0].tag
     for child in root:
         if child.tag == 'data' :
             numResults = child.attrib['num_results']
@@ -57,11 +56,13 @@ def parseXML(root):
 
 @app.route('/', methods=['GET', 'POST'])
 def showMainPage():
+    results = []
     if request.method == 'POST':
-        results =  getWxRpt( processString(request.form['inputString']),
+        results = getWxRpt(processString(request.form['inputString']),
             processString(request.form['inputString']))
-        print results
-    return render_template('mainpage.html')
+        #print results
+        return render_template('reports.html', results=results)
+    return render_template('mainpage.html', results=results)
 
 @app.route('/getData/<string:inputString>/', methods=['POST'])
 def getWeatherData():
