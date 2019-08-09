@@ -25,31 +25,41 @@ def getWxRpt(metarString, tafString):
     urlTAF = 'https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString={0}&hoursBeforeNow=4'.format(tafString)
     rawResponse = requests.get(urlMETAR)
     xmlContent = rawResponse.content
-    dataMETAR = {}
-    dataTAF = {}
-    root = ET.fromstring(xmlContent)
-    numResults = 0
+    rootMETAR = ET.fromstring(xmlContent)
 
-    for child in root :
+    dataMETAR = parseXML(rootMETAR)
+    
+    rawResponse = requests.get(urlTAF)
+    xmlContent = rawResponse.content
+    rootTAF = ET.fromstring(xmlContent)
+    dataTAF = parseXML(rootTAF)
+    return dataMETAR, dataTAF
+
+def parseXML(root):
+    data = {}
+    numResults = 0
+    print root[6][0].tag
+    for child in root:
         if child.tag == 'data' :
             numResults = child.attrib['num_results']
             if not numResults :
-                dataMETAR['No data found'] = 'Please try another query'
-            for report in child.iter('METAR') :
+                data['No data found'] = 'Please try another query'
+            for report in child.iter(str(root[6][0].tag)) :
                 if report[0].text :
-                    dataMETAR[report[1].text] = report[0].text
+                    data[report[1].text] = report[0].text
                 else :
                     # If blank data found, will display an error
                     # Redesign with a Try/Except statement
                     # Examine XML format for a bad query result
-                    dataMETAR[report[1].text] = report[1].text + \
+                    data[report[1].text] = report[1].text + \
                         "No data available or no data found for this station"
-    return  dataMETAR.values(), dataTAF.values()
+    return  data.values()
 
 @app.route('/', methods=['GET', 'POST'])
 def showMainPage():
     if request.method == 'POST':
-        results =  getWxRpt( processString(request.form['inputString']), processString(request.form['inputString']))
+        results =  getWxRpt( processString(request.form['inputString']),
+            processString(request.form['inputString']))
         print results
     return render_template('mainpage.html')
 
