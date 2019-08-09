@@ -8,3 +8,5 @@ This is being developed for personal use and academic purposes, but it not inten
 
 ## Design Notes
 See the [Aviation Weather Center](https://www.aviationweather.gov/dataserver/example?datatype=metar) webpage for detailed information about their web API. 
+
+
