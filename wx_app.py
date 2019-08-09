@@ -2,8 +2,8 @@
 import requests, re, os, sys, string
 import xml.etree.ElementTree as ET
 
-from flask import Flask, render_template, request, \
- redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, 
+    redirect, jsonify, url_for, flash
 
 from flask import session as login_session
 from flask import make_response
@@ -24,9 +24,11 @@ def processString(inputString):
 
 def getWxRpt(metarString, tafString):
     urlMETAR = 'https://www.aviationweather.gov/adds/dataserver_current/\
-        httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString={0}&hoursBeforeNow=1'.format(metarString)
+        httpparam?dataSource=metars&requestType=retrieve&\
+        format=xml&stationString={0}&hoursBeforeNow=1'.format(metarString)
     urlTAF = 'https://www.aviationweather.gov/adds/dataserver_current/\
-        httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString={0}&hoursBeforeNow=4'.format(tafString)
+        httpparam?dataSource=tafs&requestType=retrieve&\
+        format=xml&stationString={0}&hoursBeforeNow=4'.format(tafString)
     rawResponse = requests.get(urlMETAR)
     xmlContent = rawResponse.content
     dataMETAR = {}
@@ -37,7 +39,7 @@ def getWxRpt(metarString, tafString):
         if child.tag == 'data' :
             numResults = child.attrib['num_results']
             if num_results == 0 :
-                return dataMETAR['No data found'] = 'Please try another query'
+                dataMETAR['No data found'] = 'Please try another query'
             for report in child.iter('METAR') :
                 if report[0].text :
                     dataMETAR[report[1].text] = report[0].text
@@ -54,8 +56,11 @@ metarString = processString(metarString)
 
 @app.route('/', methods=['GET'])
 def showMainPage():
-    return render_template('mainpage.html', '')
+    return render_template('mainpage.html')
 
+@app.route('/', methods=['POST'])
+def getWeatherData():
+    print form.inputString.data
 # Example for redirects
 # redirect(url_for('methodName', arguments...))
 
